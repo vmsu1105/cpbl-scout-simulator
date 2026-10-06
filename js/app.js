@@ -947,6 +947,73 @@ window.App = {
     summaryParts.push(`<span class="text-rose-400 font-bold">${countBust} 地雷</span>`);
     document.getElementById("finale-roster-summary").innerHTML = summaryParts.join(' · ');
 
+    // 3.5 渲染執掌球團五年選秀全陣容 (10 位新秀生涯累計戰果)
+    const rosterGrid = document.getElementById("finale-drafted-roster-grid");
+    const playerDraftRecords = (this.state.draftedRosterByTeam[playerTeam.id] || []);
+    
+    // 計算每位選手的累積與巔峰 WAR 並排序
+    const sortedDraftRecords = [...playerDraftRecords].map(r => {
+      const p = r.player;
+      const wars = [p.y1_war || 0, p.y2_war || 0, p.y3_war || 0, p.y4_war || 0, p.y5_war || 0];
+      const totalWar = Math.round(wars.reduce((a, b) => a + b, 0) * 10) / 10;
+      const peakWar = Math.max(...wars);
+      return { ...r, totalWar, peakWar };
+    }).sort((a, b) => b.totalWar - a.totalWar);
+
+    if (rosterGrid) {
+      rosterGrid.innerHTML = "";
+      sortedDraftRecords.forEach(rec => {
+        const p = rec.player;
+        let tierBadge = "";
+        let borderClass = "border-slate-800";
+        if (p.tier === "legend") {
+          tierBadge = '<span class="text-[10px] bg-purple-500/20 text-purple-300 border border-purple-500/40 px-1.5 py-0.5 rounded font-black">👑 SS級超神獸</span>';
+          borderClass = "border-purple-500/40 bg-purple-950/20";
+        } else if (p.tier === "superstar") {
+          tierBadge = '<span class="text-[10px] bg-amber-500/20 text-amber-400 border border-amber-500/40 px-1.5 py-0.5 rounded font-bold">🌟 S級神獸</span>';
+          borderClass = "border-amber-500/40 bg-amber-950/20";
+        } else if (p.tier === "regular") {
+          tierBadge = '<span class="text-[10px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 px-1.5 py-0.5 rounded font-bold">💎 中流砥柱</span>';
+          borderClass = "border-emerald-900/40";
+        } else if (p.tier === "ordinary") {
+          tierBadge = '<span class="text-[10px] bg-slate-800 text-slate-300 border border-slate-700 px-1.5 py-0.5 rounded">💼 普通公務員</span>';
+        } else if (p.tier === "bust") {
+          tierBadge = '<span class="text-[10px] bg-rose-500/20 text-rose-400 border border-rose-500/40 px-1.5 py-0.5 rounded font-bold">💣 致命地雷</span>';
+          borderClass = "border-rose-900/40";
+        }
+
+        const warColor = rec.totalWar >= 20 ? 'text-amber-400' : rec.totalWar >= 10 ? 'text-emerald-400' : rec.totalWar > 0 ? 'text-blue-400' : 'text-rose-400';
+
+        const card = document.createElement("div");
+        card.className = `p-3.5 rounded-2xl border ${borderClass} bg-slate-950/80 flex items-start justify-between gap-3 text-xs transition hover:border-amber-500/50`;
+        card.innerHTML = `
+          <div class="space-y-1.5 min-w-0">
+            <div class="flex items-center space-x-1.5 flex-wrap gap-y-1">
+              <span class="text-[10px] bg-slate-800 text-amber-400/90 font-num px-1.5 py-0.5 rounded font-bold">
+                第${rec.year}年·第${rec.round}輪
+              </span>
+              <span class="font-bold text-white text-sm truncate">${p.title}</span>
+              ${tierBadge}
+              <span class="text-amber-300 font-bold text-[11px]">(${p.real_nickname || p.real_name_hint})</span>
+            </div>
+            <div class="text-[11px] text-slate-400 flex items-center space-x-2">
+              <span>${p.pos}・${p.bats}</span>
+              <span>•</span>
+              <span class="text-slate-300">單季最高：<b class="text-white font-num">+${rec.peakWar} WAR</b></span>
+            </div>
+            <p class="text-slate-400 text-[11px] line-clamp-1 leading-relaxed">${p.career_story}</p>
+          </div>
+          <div class="text-right shrink-0">
+            <span class="text-base font-black ${warColor} font-num block">
+              +${rec.totalWar} WAR
+            </span>
+            <span class="text-[10px] text-slate-500">生涯五年累計</span>
+          </div>
+        `;
+        rosterGrid.appendChild(card);
+      });
+    }
+
     // 4. 五年最痛心錯過榜 (Top Missed Gems)
     const missedList = document.getElementById("finale-missed-list");
     missedList.innerHTML = "";
@@ -1054,6 +1121,50 @@ window.App = {
       const totalRookieWar = playerPicks.reduce((sum, p) => sum + (p.y1_war || 0) + (p.y2_war || 0) + (p.y3_war || 0) + (p.y4_war || 0) + (p.y5_war || 0), 0);
       document.getElementById("sc-rookie-war").innerText = `+${totalRookieWar.toFixed(1)} WAR`;
       document.getElementById("sc-draft-summary").innerText = `${countLegend + countSuperstar} 神獸 / ${countBust} 地雷`;
+
+      // 執掌球團五年選秀全陣容 (10 位新秀注入離屏分享卡)
+      const scRosterDiv = document.getElementById("sc-drafted-roster");
+      if (scRosterDiv) {
+        scRosterDiv.innerHTML = sortedDraftRecords.map(rec => {
+          const p = rec.player;
+          let tierBadge = "";
+          let bgClass = "bg-slate-950/60 border-slate-800";
+          if (p.tier === "legend") {
+            tierBadge = '<span class="text-[9px] bg-purple-500/20 text-purple-300 border border-purple-500/40 px-1 py-0.2 rounded font-black">SS級</span>';
+            bgClass = "bg-purple-950/20 border-purple-500/30";
+          } else if (p.tier === "superstar") {
+            tierBadge = '<span class="text-[9px] bg-amber-500/20 text-amber-400 border border-amber-500/40 px-1 py-0.2 rounded font-bold">S級</span>';
+            bgClass = "bg-amber-950/20 border-amber-500/30";
+          } else if (p.tier === "regular") {
+            tierBadge = '<span class="text-[9px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 px-1 py-0.2 rounded font-bold">中堅</span>';
+            bgClass = "bg-emerald-950/20 border-emerald-900/40";
+          } else if (p.tier === "ordinary") {
+            tierBadge = '<span class="text-[9px] bg-slate-800 text-slate-300 border border-slate-700 px-1 py-0.2 rounded">普通</span>';
+            bgClass = "bg-slate-900/60 border-slate-800";
+          } else if (p.tier === "bust") {
+            tierBadge = '<span class="text-[9px] bg-rose-500/20 text-rose-400 border border-rose-500/40 px-1 py-0.2 rounded font-bold">地雷</span>';
+            bgClass = "bg-rose-950/20 border-rose-900/40";
+          }
+
+          const warColor = rec.totalWar >= 20 ? 'text-amber-400 font-black' : rec.totalWar >= 10 ? 'text-emerald-400 font-bold' : rec.totalWar > 0 ? 'text-blue-400 font-bold' : 'text-rose-400 font-bold';
+
+          return `
+            <div class="p-2 rounded-xl border ${bgClass} flex items-center justify-between text-xs">
+              <div class="flex items-center space-x-1.5 min-w-0">
+                <span class="text-[9px] bg-slate-800 text-amber-400/90 font-num px-1 py-0.2 rounded font-bold shrink-0">
+                  Y${rec.year} R${rec.round}
+                </span>
+                <span class="text-white font-bold truncate">${p.title}</span>
+                ${tierBadge}
+                <span class="text-amber-300 font-medium text-[11px] shrink-0">(${p.real_nickname || p.real_name_hint})</span>
+              </div>
+              <div class="text-right shrink-0 ml-2">
+                <span class="${warColor} font-num text-xs">+${rec.totalWar} W</span>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
 
       // 核心台柱 (取累積 WAR 前 3 名新秀)
       const sortedPicks = [...playerPicks].map(p => ({
@@ -1613,13 +1724,22 @@ window.App = {
       el.style.opacity = "1";
     }
 
+    const targetWidth = el.offsetWidth || 760;
+    const targetHeight = el.scrollHeight;
+
     html2canvas(el, {
       backgroundColor: "#020617",
       scale: 2, // 2x Retina 高解析
       useCORS: true,
       logging: false,
+      width: targetWidth,
+      height: targetHeight,
+      windowWidth: targetWidth,
+      windowHeight: targetHeight,
+      x: 0,
+      y: 0,
       scrollX: 0,
-      scrollY: -window.scrollY
+      scrollY: 0
     }).then(canvas => {
       if (isShareCard) {
         el.style.position = prevPosition;
@@ -1669,13 +1789,22 @@ window.App = {
       el.style.opacity = "1";
     }
 
+    const targetWidth = el.offsetWidth || 760;
+    const targetHeight = el.scrollHeight;
+
     html2canvas(el, {
       backgroundColor: "#020617",
       scale: 2,
       useCORS: true,
       logging: false,
+      width: targetWidth,
+      height: targetHeight,
+      windowWidth: targetWidth,
+      windowHeight: targetHeight,
+      x: 0,
+      y: 0,
       scrollX: 0,
-      scrollY: -window.scrollY
+      scrollY: 0
     }).then(canvas => {
       if (isShareCard) {
         el.style.position = prevPosition;

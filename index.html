@@ -14,7 +14,7 @@
   <!-- html2canvas CDN (用於生成戰報截圖) -->
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
   <!-- Custom CSS -->
-  <link rel="stylesheet" href="css/style.css?v=2.4">
+  <link rel="stylesheet" href="css/style.css?v=2.7">
 </head>
 <body class="min-h-screen flex flex-col bg-slate-950 text-slate-100">
 
@@ -330,44 +330,64 @@
   </div>
 
   <!-- 首席球探五年任期・歷史成績總考評彈窗 (Hall of Fame Finale Modal) -->
-  <div id="modal-finale" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
-    <div class="bg-slate-900 border border-slate-700 w-full max-w-2xl rounded-3xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh] animate-in fade-in zoom-in duration-300">
+  <div id="modal-finale" class="hidden fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/85 backdrop-blur-md">
+    <div class="bg-slate-900 border border-slate-700 w-full max-w-4xl rounded-3xl overflow-hidden shadow-2xl flex flex-col max-h-[92vh] animate-in fade-in zoom-in duration-300">
       
       <!-- 彈窗頂部榮耀標題 -->
-      <div class="bg-gradient-to-r from-amber-600 via-orange-600 to-amber-700 p-6 text-center text-slate-950 relative overflow-hidden">
-        <span class="text-xs font-black uppercase tracking-widest bg-black/20 px-3 py-1 rounded-full text-white inline-block mb-1">
+      <div class="bg-gradient-to-r from-amber-600 via-orange-600 to-amber-700 px-6 pt-6 pb-8 text-center text-slate-950 relative shadow-inner">
+        <span class="text-xs font-black uppercase tracking-widest bg-black/25 px-3.5 py-1 rounded-full text-white inline-block mb-2">
           五 年 任 期 屆 滿 ・ 歷 史 總 考 評
         </span>
         <h2 class="text-2xl md:text-3xl font-black text-white flex items-center justify-center space-x-2">
           <span>🏆</span>
           <span id="finale-team-title">首席球探考評報告</span>
         </h2>
-        <p class="text-xs text-amber-100 font-medium mt-1" id="finale-subtitle"></p>
+        <p class="text-xs md:text-sm text-amber-100 font-medium mt-2 leading-relaxed max-w-2xl mx-auto pb-1" id="finale-subtitle"></p>
       </div>
 
       <!-- 彈窗滾動內容 -->
-      <div class="p-6 space-y-6 overflow-y-auto text-sm">
+      <div class="p-5 md:p-6 space-y-6 overflow-y-auto text-sm">
         
         <!-- 考評等級與核心數據卡 -->
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
           <div class="bg-slate-950 p-3.5 rounded-2xl border border-slate-800">
             <span class="text-xs text-slate-500 block mb-1">球探評鑑等級</span>
-            <span id="finale-grade" class="text-2xl font-black text-amber-400 font-num"></span>
-            <span id="finale-grade-title" class="text-[11px] text-slate-400 block font-bold"></span>
+            <span id="finale-grade" class="text-2xl md:text-3xl font-black text-amber-400 font-num"></span>
+            <span id="finale-grade-title" class="text-[11px] text-slate-400 block font-bold mt-0.5"></span>
           </div>
           <div class="bg-slate-950 p-3.5 rounded-2xl border border-slate-800">
             <span class="text-xs text-slate-500 block mb-1">五年累積總勝場</span>
-            <span id="finale-wins" class="text-2xl font-black text-white font-num"></span>
-            <span class="text-[11px] text-slate-400 block">/ 600 場例行賽</span>
+            <span id="finale-wins" class="text-2xl md:text-3xl font-black text-white font-num"></span>
+            <span class="text-[11px] text-slate-400 block mt-0.5">/ 600 場例行賽</span>
           </div>
           <div class="bg-slate-950 p-3.5 rounded-2xl border border-slate-800">
             <span class="text-xs text-slate-500 block mb-1">年度總冠軍金盃</span>
-            <span id="finale-championships" class="text-2xl font-black text-amber-400 font-num"></span>
-            <span class="text-[11px] text-slate-400 block">座總冠軍</span>
+            <span id="finale-championships" class="text-2xl md:text-3xl font-black text-amber-400 font-num"></span>
+            <span class="text-[11px] text-slate-400 block mt-0.5">座總冠軍</span>
           </div>
           <div class="bg-slate-950 p-3.5 rounded-2xl border border-slate-800">
             <span class="text-xs text-slate-500 block mb-1">五年選秀成果</span>
             <span id="finale-roster-summary" class="text-xs font-bold text-white block mt-1.5 font-num"></span>
+          </div>
+        </div>
+
+        <!-- 視覺引導提示：引導玩家向下瀏覽 10 位新秀與歷史榜單 -->
+        <div class="flex items-center justify-center space-x-2 text-xs text-amber-400/90 bg-amber-500/10 border border-amber-500/25 py-2.5 px-4 rounded-xl">
+          <i data-lucide="chevrons-down" class="w-4 h-4 animate-bounce text-amber-400"></i>
+          <span class="font-bold">向下滾動滑動：瀏覽五年選秀 10 人全陣容戰果、最痛心錯過榜與最英明避雷紀錄</span>
+        </div>
+
+        <!-- 🌟 五年選秀榮耀名冊（執掌球團 10 位新秀成果） -->
+        <div class="space-y-3">
+          <div class="flex items-center justify-between border-b border-slate-800 pb-2.5">
+            <h4 class="text-xs md:text-sm font-bold text-amber-400 flex items-center space-x-2">
+              <span>🌟</span>
+              <span>執掌球團五年選秀全陣容（10 位新秀生涯累計戰果）</span>
+            </h4>
+            <span class="text-[11px] text-slate-400">依生涯累積貢獻排序・各輪次培育全紀錄</span>
+          </div>
+          <div id="finale-drafted-roster-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <!-- 由 app.js 動態渲染 10 位新秀小卡 -->
           </div>
         </div>
 
@@ -478,6 +498,20 @@
       </div>
     </div>
 
+    <!-- 執掌球團五年選秀全陣容 (10 位新秀成果) -->
+    <div class="space-y-2 text-xs">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-1.5">
+        <span class="font-bold text-amber-400 flex items-center space-x-1.5">
+          <span>⚾</span>
+          <span>執掌球團五年選秀全陣容（10 位新秀生涯累計戰果）</span>
+        </span>
+        <span class="text-[10px] text-slate-500">依生涯貢獻排序</span>
+      </div>
+      <div id="sc-drafted-roster" class="grid grid-cols-2 gap-2 text-slate-300">
+        <!-- 動態填入 10 位新秀卡片 -->
+      </div>
+    </div>
+
     <!-- 代表作：名震天下神獸 與 英明避雷 -->
     <div class="grid grid-cols-2 gap-4 text-xs">
       <div class="bg-slate-900/80 p-4 rounded-xl border border-slate-800 space-y-2">
@@ -515,15 +549,15 @@
   </div>
 
   <!-- 引入所有模組腳本 (加上版本號以破除瀏覽器 Disk Cache 快取) -->
-  <script src="js/data/superstars.js?v=2.6"></script>
-  <script src="js/data/regulars.js?v=2.6"></script>
-  <script src="js/data/busts.js?v=2.6"></script>
-  <script src="js/data/ordinary.js?v=2.6"></script>
-  <script src="js/database.js?v=2.6"></script>
-  <script src="js/generator.js?v=2.6"></script>
-  <script src="js/ai.js?v=2.6"></script>
-  <script src="js/sim.js?v=2.6"></script>
-  <script src="js/app.js?v=2.6"></script>
+  <script src="js/data/superstars.js?v=2.7"></script>
+  <script src="js/data/regulars.js?v=2.7"></script>
+  <script src="js/data/busts.js?v=2.7"></script>
+  <script src="js/data/ordinary.js?v=2.7"></script>
+  <script src="js/database.js?v=2.7"></script>
+  <script src="js/generator.js?v=2.7"></script>
+  <script src="js/ai.js?v=2.7"></script>
+  <script src="js/sim.js?v=2.7"></script>
+  <script src="js/app.js?v=2.7"></script>
 
   <script>
     // 初始化 Lucide 圖示
