@@ -572,28 +572,7 @@ window.SUPERSTARS_DATA = [
     "y4_war": 6,
     "y5_war": 5
   },
-  {
-    "id": "ss_27",
-    "tier": "superstar",
-    "title": "南英名門・大聯盟級巧打內野好手",
-    "pos": "野手",
-    "bats": "右投右打",
-    "height": 180,
-    "weight": 84,
-    "school": "南部傳統名門/道奇體系",
-    "stats": "大聯盟洛杉磯道奇內野，小聯盟 3A 打擊率破 3 成，選球手眼協調頂級",
-    "scout_pros": "純打擊手腕手眼協調如藝術品，無論任何球路皆能用最乾淨軌跡擊成強勁平飛球，游擊防守腳步流暢。",
-    "scout_cons": "長年征戰下肩膀傳球負荷較大，未來進入成棒後期可能需移防外野或指定打擊。",
-    "real_nickname": "金龍",
-    "real_name_hint": "胡金龍原型",
-    "career_story": "台灣首位登上大聯盟的內野手！回中職加盟義大犀牛連霸打擊王與安打王，中職千安神話！",
-    "y1_war": 4,
-    "y2_war": 6,
-    "y3_war": 7,
-    "is_returnee": true,
-    "y4_war": 6,
-    "y5_war": 5
-  },
+
   {
     "id": "ss_28",
     "tier": "superstar",
@@ -770,28 +749,7 @@ window.SUPERSTARS_DATA = [
     "y5_war": 7,
     "is_returnee": false
   },
-  {
-    "id": "ss_36",
-    "tier": "superstar",
-    "title": "三民名門剛猛火球守護神・極速156km強心臟右投",
-    "pos": "投手",
-    "bats": "右投右打",
-    "height": 176,
-    "weight": 78,
-    "school": "南部棒球強校",
-    "stats": "甲組成棒春季聯賽防禦率 0.85，最快狂飆 156km/h，滑球下墜引誘性極頂",
-    "scout_pros": "意志力鋼鐵無比，滑球如同刀刃般銳利下墜，九局下半大心臟拆彈，具備主宰戰局的絕對霸氣與終結能力。",
-    "scout_cons": "身材較為精瘦，球速全開時對心臟與體力負荷大，但展現了超越常人的鋼鐵意志。",
-    "real_nickname": "大餅",
-    "real_name_hint": "林岳平原型",
-    "career_story": "戰勝心臟疾病重返球場的火球戰神！奪下隊史救援王並率隊奪得總冠軍，感動全台的生命鬥士守護神！",
-    "y1_war": 1,
-    "y2_war": 5,
-    "y3_war": 7,
-    "y4_war": 7,
-    "y5_war": 7,
-    "is_returnee": false
-  },
+
   {
     "id": "ss_37",
     "tier": "superstar",
