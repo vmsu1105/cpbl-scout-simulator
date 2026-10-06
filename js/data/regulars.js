@@ -1782,28 +1782,7 @@ window.REGULARS_DATA = [
     "y5_war": 3,
     "is_returnee": true
   },
-  {
-    "id": "reg_83",
-    "tier": "regular",
-    "title": "日職埼玉西武獅・得點圈之鬼內野大將",
-    "pos": "野手",
-    "bats": "右投左打",
-    "height": 183,
-    "weight": 83,
-    "school": "留日青棒名門/日職西武獅",
-    "stats": "日職得點圈打擊率破 3 成，選球精密，能守二三一壘與游擊",
-    "scout_pros": "日職高階聯賽洗禮，球商與戰術理解極高，好球帶紀律嚴密，得點圈打擊心理成熟。",
-    "scout_cons": "純揮棒力量非重砲型，主要依賴精密選球與反向推打製造傷害。",
-    "real_nickname": "念庭",
-    "real_name_hint": "吳念庭原型 👑海歸",
-    "career_story": "西武獅「得點圈之鬼」！首輪海歸加盟台鋼雄鷹，成為雄鷹軍團最穩定的內野支柱核心！",
-    "y1_war": 3,
-    "y2_war": 4,
-    "y3_war": 4,
-    "y4_war": 3,
-    "y5_war": 3,
-    "is_returnee": true
-  },
+
   {
     "id": "reg_84",
     "tier": "regular",
