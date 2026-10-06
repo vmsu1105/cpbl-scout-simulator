@@ -1323,7 +1323,7 @@ window.REGULARS_DATA = [
   {
     "id": "reg_62",
     "tier": "regular",
-    "title": "平鎮青棒隊長・五拍子頂級游擊奇才",
+    "title": "平鎮青棒隊長・五拍子頂級外野大物",
     "pos": "野手",
     "bats": "右投右打",
     "height": 181,
@@ -1334,7 +1334,7 @@ window.REGULARS_DATA = [
     "scout_cons": "長打力量屬於中中水準，面對頂級職業內角速球的強拉能力需在職業階段持續精進。",
     "real_nickname": "庭綸",
     "real_name_hint": "許庭綸原型",
-    "career_story": "選秀首輪第一指名狀元郎！攻守跑全方位的完美拼圖，球隊未來的當家開路先鋒！",
+    "career_story": "選秀首輪第一指名狀元郎！攻守跑全方位的完美拼圖，黃衫軍未來的當家外野開路先鋒！",
     "y1_war": 1,
     "y2_war": 3,
     "y3_war": 4,
