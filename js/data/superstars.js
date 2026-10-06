@@ -923,5 +923,27 @@ window.SUPERSTARS_DATA = [
     "is_returnee": true,
     "y4_war": 6,
     "y5_war": 5
+  },
+  {
+    "id": "ss_43",
+    "tier": "superstar",
+    "title": "日職羅德抗日左腕・速差控球大師「陳陳大丈夫」",
+    "pos": "投手",
+    "bats": "左投左打",
+    "height": 178,
+    "weight": 76,
+    "school": "國立體大/日職千葉羅德海洋體系",
+    "stats": "旅日征戰近十年，極速 148km/h，極品曲球落差巨大，控球隨心所欲，大賽登板壓制日韓豪強",
+    "scout_pros": "投球姿勢隱蔽藏球極佳，曲球與速球速差達 25km/h，變速球下墜精準，具備微笑強心臟與大賽拆彈王者氣場。",
+    "scout_cons": "長年投球負擔需適度調節，非重砲純力量型，仰賴精密放球點與進壘角度制敵。",
+    "real_nickname": "陳陳",
+    "real_name_hint": "陳冠宇原型 👑海歸",
+    "career_story": "旅日羅德隊名投！「陳陳大丈夫」成名口號，世界12強抗韓勝投名將，返台成為暴力狂猿奪冠牛棚定海神針！",
+    "y1_war": 4,
+    "y2_war": 6,
+    "y3_war": 7,
+    "y4_war": 6,
+    "y5_war": 5,
+    "is_returnee": true
   }
 ];

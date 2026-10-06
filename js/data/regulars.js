@@ -463,28 +463,6 @@ window.REGULARS_DATA = [
     "is_returnee": false
   },
   {
-    "id": "reg_22",
-    "tier": "regular",
-    "title": "日職千葉羅德修長左腕・速差精準資深即戰力",
-    "pos": "投手",
-    "bats": "左投左打",
-    "height": 178,
-    "weight": 76,
-    "school": "國立體大/日職千葉羅德海洋體系",
-    "stats": "日職登板出賽，曲球落差巨大，變速球精湛，控球落點極為刁鑽精確",
-    "scout_pros": "投球姿勢隱蔽藏球好，曲球與速球速差達 25km/h，職業抗壓經驗極為豐富。",
-    "scout_cons": "極速維持 143km/h 上下，非三振火球派，需精準掌握好球帶邊角。",
-    "real_nickname": "陳陳",
-    "real_name_hint": "陳冠宇原型",
-    "career_story": "旅日羅德隊名投！「陳陳大丈夫」成名口號，回中職為暴力狂猿奪冠老臣！",
-    "y1_war": 3,
-    "y2_war": 4,
-    "y3_war": 4,
-    "y4_war": 3,
-    "y5_war": 3,
-    "is_returnee": true
-  },
-  {
     "id": "reg_23",
     "tier": "regular",
     "title": "花蓮青棒大心臟剛猛右投",
