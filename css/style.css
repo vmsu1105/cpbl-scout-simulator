@@ -1,0 +1,135 @@
+/* 台灣職棒・球探模擬器 - 核心視覺樣式 (Style) */
+
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Oswald:wght@500;700&display=swap');
+
+:root {
+  --bg-primary: #0a0f18;
+  --bg-secondary: #121c2d;
+  --bg-card: #18253b;
+  --text-main: #f0f4f8;
+  --text-muted: #94a3b8;
+  --accent-gold: #f59e0b;
+  --accent-red: #ef4444;
+  --accent-green: #10b981;
+}
+
+body {
+  font-family: 'Noto Sans TC', sans-serif;
+  background-color: var(--bg-primary);
+  color: var(--text-main);
+  overflow-x: hidden;
+}
+
+.font-num {
+  font-family: 'Oswald', sans-serif;
+}
+
+/* 棒球卡質感與懸浮效果 */
+.prospect-card {
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  background: linear-gradient(145deg, #18253b, #0f1929);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.prospect-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(245, 158, 11, 0.4);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 0 15px rgba(245, 158, 11, 0.15);
+}
+
+.prospect-card.drafted {
+  opacity: 0.35;
+  filter: grayscale(80%);
+  pointer-events: none;
+}
+
+/* 3D 翻牌開箱特效 */
+.card-flip-container {
+  perspective: 1200px;
+}
+
+.card-flip-inner {
+  transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transform-style: preserve-3d;
+}
+
+.card-flip-inner.is-flipped {
+  transform: rotateY(180deg);
+}
+
+.card-front, .card-back {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.card-back {
+  transform: rotateY(180deg);
+}
+
+/* 神獸金色光暈 */
+.superstar-glow {
+  background: radial-gradient(circle, rgba(245, 158, 11, 0.25) 0%, rgba(10, 15, 24, 0) 70%);
+  box-shadow: 0 0 30px rgba(245, 158, 11, 0.35);
+  border: 2px solid #f59e0b !important;
+}
+
+/* 地雷紅色警報 */
+.bust-glow {
+  background: radial-gradient(circle, rgba(239, 68, 68, 0.25) 0%, rgba(10, 15, 24, 0) 70%);
+  box-shadow: 0 0 30px rgba(239, 68, 68, 0.35);
+  border: 2px solid #ef4444 !important;
+}
+
+/* 普通人復古感 */
+.ordinary-tint {
+  background: radial-gradient(circle, rgba(148, 163, 184, 0.15) 0%, rgba(10, 15, 24, 0) 70%);
+  border: 1px solid rgba(148, 163, 184, 0.3) !important;
+}
+
+/* 轉播電視台跑馬燈 */
+.marquee-container {
+  background: #05080e;
+  border-top: 1px solid #1e293b;
+  border-bottom: 1px solid #1e293b;
+}
+
+/* PTT 鄉民論壇黑底綠字復古框 */
+.ptt-terminal {
+  background-color: #000000;
+  color: #00ff00;
+  font-family: 'Courier New', Courier, monospace;
+  border: 1px solid #333333;
+}
+
+.ptt-push {
+  color: #ff3333;
+  font-weight: bold;
+}
+
+.ptt-boo {
+  color: #ffff00;
+  font-weight: bold;
+}
+
+.ptt-arrow {
+  color: #ffffff;
+}
+
+/* 自訂捲軸 */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0a0f18;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #f59e0b;
+}

@@ -1,0 +1,8 @@
+# 本地測試與暫存檔案
+scratch/
+*.bak
+*.log
+
+# 系統隱藏檔
+.DS_Store
+Thumbs.db

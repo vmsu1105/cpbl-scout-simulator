@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>台灣職棒・球探模擬器 (CPBL Scout & GM Simulator)</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- html2canvas CDN (用於生成戰報截圖) -->
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="css/style.css?v=2.4">
+</head>
+<body class="min-h-screen flex flex-col bg-slate-950 text-slate-100">
+
+  <!-- 頂部轉播頻道標題列 -->
+  <header class="bg-slate-900 border-b border-slate-800 px-4 py-3 sticky top-0 z-40 shadow-lg">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <span class="text-2xl">⚾</span>
+        <div>
+          <h1 class="text-lg font-black tracking-wide bg-gradient-to-r from-amber-400 via-orange-400 to-amber-200 bg-clip-text text-transparent">
+            台灣職棒・球探模擬器
+          </h1>
+          <p class="text-xs text-slate-400 font-medium">CPBL SCOUT & GM SIMULATOR・400人母庫五年王朝版</p>
+        </div>
+      </div>
+      <div id="header-status" class="flex items-center space-x-4 text-sm font-medium">
+        <span id="current-year-badge" class="bg-amber-500/10 text-amber-400 border border-amber-500/30 px-3 py-1 rounded-full text-xs font-num">
+          第 1 年選秀大會
+        </span>
+        <button id="btn-restart" class="text-xs text-slate-400 hover:text-white flex items-center space-x-1 transition">
+          <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+          <span>重開新局</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 電視台選秀跑馬燈 -->
+  <div class="marquee-container py-2 px-4 overflow-hidden relative text-xs text-slate-300 font-mono">
+    <div id="live-marquee" class="whitespace-nowrap flex items-center space-x-6 animate-pulse">
+      <span class="text-amber-400 font-bold">🔴 [選秀現場快訊]</span>
+      <span id="marquee-text">選秀大會即將正式開始，現場湧入大批球迷與各球團代表...</span>
+    </div>
+  </div>
+
+  <!-- 主要內容視圖區域 -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6">
+
+    <!-- 視圖 1：球團選擇大廳 (Team Select Screen) -->
+    <section id="view-team-select" class="space-y-6">
+      <div class="text-center max-w-2xl mx-auto space-y-2 py-4">
+        <h2 class="text-2xl md:text-3xl font-black text-white">請選擇你想執掌的球團</h2>
+        <p class="text-sm text-slate-400">
+          你是該隊的「首席球探兼總管」。本模式搭載 400 人深度母庫與五年任期制，選秀順位依據上賽季戰績倒序排列，其餘 5 支球隊將由電腦 AI 進行即時博弈選秀與截胡！
+        </p>
+      </div>
+
+      <div id="team-cards-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- 由 app.js 動態渲染六隊卡片 -->
+      </div>
+    </section>
+
+    <!-- 視圖 2：選秀大會現場 (Live Draft Screen) -->
+    <section id="view-draft-arena" class="hidden space-y-6">
+      
+      <!-- 選秀順位看板 (Draft Order Board) -->
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 shadow-xl">
+        <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center space-x-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping"></span>
+            <h3 class="text-sm font-bold text-white flex items-center space-x-1">
+              <span>選秀順位看板</span>
+              <span id="draft-round-text" class="text-amber-400 font-num">【第一輪】</span>
+            </h3>
+          </div>
+          <div class="text-xs text-slate-400">
+            目前輪次：<span id="current-pick-info" class="text-white font-bold font-num">第 1 順位</span>
+          </div>
+        </div>
+
+        <div id="draft-order-board" class="grid grid-cols-6 gap-2">
+          <!-- 由 app.js 動態渲染六隊順位狀態指示卡 -->
+        </div>
+      </div>
+
+      <!-- 提示條：輪到玩家選秀時高光提示 -->
+      <div id="player-turn-banner" class="hidden bg-gradient-to-r from-amber-500/20 via-orange-500/30 to-amber-500/20 border-2 border-amber-400 p-4 rounded-xl text-center shadow-lg animate-bounce">
+        <div class="text-base font-black text-amber-300 flex items-center justify-center space-x-2">
+          <span>🔔 叮咚！輪到你的回合！</span>
+          <span id="player-pick-banner-team" class="underline"></span>
+        </div>
+        <p class="text-xs text-slate-300 mt-1">請在下方選秀板點選心儀的新秀卡片，查看情報並進行指名！</p>
+      </div>
+
+      <!-- 電腦 AI 思考提示條 -->
+      <div id="ai-turn-banner" class="hidden bg-slate-900 border border-slate-700 p-4 rounded-xl text-center text-sm text-slate-300 flex items-center justify-center space-x-3">
+        <div class="w-4 h-4 border-2 border-amber-400 border-t-transparent rounded-full animate-spin"></div>
+        <span id="ai-turn-text">電腦球團正在謹慎評估選秀情報...</span>
+      </div>
+
+      <!-- 18 位打亂新秀選秀板 -->
+      <div class="space-y-3">
+        <div class="flex items-center justify-between">
+          <h3 class="text-sm font-bold text-slate-200 flex items-center space-x-2">
+            <span>📋 當屆 18 位待選情報看板</span>
+            <span class="text-xs text-slate-400 font-normal">（順序已完全隨機打亂・點擊卡片查閱球探報告）</span>
+          </h3>
+          <span class="text-xs text-slate-400 font-num">剩餘 <span id="remaining-count" class="text-amber-400 font-bold">18</span> / 18 人</span>
+        </div>
+
+        <div id="prospects-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
+          <!-- 由 app.js 動態渲染 18 張隨機洗牌新秀卡片 -->
+        </div>
+      </div>
+
+    </section>
+
+    <!-- 視圖 3：季末開箱與戰績模擬 (Reveal & Standings Screen) -->
+    <section id="view-reveal-standings" class="hidden space-y-8">
+      
+      <!-- 總冠軍封王快訊 -->
+      <div id="champion-banner" class="rounded-2xl p-6 text-center shadow-2xl relative overflow-hidden">
+        <!-- 動態渲染封王動畫 -->
+      </div>
+
+      <!-- 開箱儀式區域 (The Unboxing Ceremony) -->
+      <div class="space-y-4">
+        <div class="text-center space-y-1">
+          <h3 class="text-xl md:text-2xl font-black text-white flex items-center justify-center space-x-2">
+            <span>🎴 新秀開箱！真實綽號與命運揭曉</span>
+          </h3>
+          <p class="text-xs text-slate-400">點擊卡片翻牌，看你究竟挖到了真神獸、中堅基石，還是踩到了地雷！</p>
+        </div>
+
+        <div id="reveal-cards-container" class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+          <!-- 由 app.js 渲染玩家選中的 2 張 3D 翻牌卡 -->
+        </div>
+
+        <!-- 歷屆新秀養成成長追蹤板 (第 2、3 年顯示) -->
+        <div id="roster-growth-tracker" class="hidden max-w-4xl mx-auto bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl space-y-3">
+          <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+            <h4 class="text-xs font-bold text-white flex items-center space-x-2">
+              <span class="text-amber-400">🌱</span>
+              <span>球團歷屆指名新秀・成長軌跡追蹤</span>
+            </h4>
+            <span id="roster-total-war-badge" class="text-xs font-bold text-emerald-400 bg-emerald-950/40 border border-emerald-500/30 px-2.5 py-0.5 rounded-full font-num"></span>
+          </div>
+          <div id="roster-growth-list" class="space-y-2">
+            <!-- 由 app.js 渲染各年指名選手目前年資與爆發狀態 -->
+          </div>
+        </div>
+      </div>
+
+      <!-- 當屆選秀全貌大揭密：你錯過了誰？ (All Prospects Review) -->
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl space-y-4">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-slate-800 pb-3">
+          <div>
+            <h3 class="text-base font-black text-white flex items-center space-x-2">
+              <span class="text-amber-400">🔍</span>
+              <span>當屆選秀全景大揭密：你錯過了誰？</span>
+              <span class="text-xs font-normal text-slate-400">（對手開箱＆落選遺珠全公開）</span>
+            </h3>
+            <p class="text-xs text-slate-400 mt-0.5">看看電腦球團偷走了哪隻神獸，或是替你踩了哪顆驚天大雷！</p>
+          </div>
+
+          <!-- 分類標籤篩選鈕 -->
+          <div class="flex items-center space-x-1.5 overflow-x-auto text-xs font-bold" id="missed-filter-buttons">
+            <button class="missed-filter-btn active bg-amber-500 text-slate-950 px-3 py-1.5 rounded-lg transition" data-filter="all">全部 16 人</button>
+            <button class="missed-filter-btn bg-slate-800 text-slate-300 hover:text-white px-3 py-1.5 rounded-lg transition" data-filter="missed-gem">💔 痛失大物</button>
+            <button class="missed-filter-btn bg-slate-800 text-slate-300 hover:text-white px-3 py-1.5 rounded-lg transition" data-filter="rival-bust">💣 對手踩雷</button>
+            <button class="missed-filter-btn bg-slate-800 text-slate-300 hover:text-white px-3 py-1.5 rounded-lg transition" data-filter="undrafted">🌾 落選遺珠</button>
+          </div>
+        </div>
+
+        <!-- 16 人開箱卡片網格 -->
+        <div id="missed-prospects-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          <!-- 由 app.js 動態渲染 -->
+        </div>
+      </div>
+
+      <!-- 例行賽 120 場戰績榜 (Standings Table) -->
+      <div class="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-xl">
+        <div class="px-5 py-3.5 border-b border-slate-800 flex flex-wrap items-center justify-between gap-3">
+          <div class="flex items-center space-x-3">
+            <h3 class="text-sm font-bold text-white flex items-center space-x-2">
+              <span>📊 120 場例行賽最終戰績榜</span>
+              <span id="standings-year-tag" class="text-xs text-amber-400 font-num"></span>
+            </h3>
+            <span class="text-xs text-slate-400 hidden md:inline">依勝率排序・前 3 名晉級季後賽</span>
+          </div>
+          <button id="btn-capture-season" class="bg-slate-800 hover:bg-amber-500 hover:text-slate-950 text-slate-300 font-bold px-3 py-1.5 rounded-lg text-xs flex items-center space-x-1.5 transition border border-slate-700 shadow">
+            <i data-lucide="camera" class="w-3.5 h-3.5"></i>
+            <span>📸 截圖本季戰報</span>
+          </button>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm">
+            <thead class="bg-slate-950/60 text-xs text-slate-400 uppercase font-medium">
+              <tr>
+                <th class="px-4 py-3">排名</th>
+                <th class="px-4 py-3">球隊</th>
+                <th class="px-4 py-3 font-num">勝場</th>
+                <th class="px-4 py-3 font-num">敗場</th>
+                <th class="px-4 py-3 font-num">勝率</th>
+                <th class="px-4 py-3 font-num">勝差</th>
+                <th class="px-4 py-3">新秀戰力 (WAR)</th>
+                <th class="px-4 py-3 font-num">賽季運氣</th>
+              </tr>
+            </thead>
+            <tbody id="standings-table-body" class="divide-y divide-slate-800 font-medium">
+              <!-- 由 app.js 動態渲染戰績榜行 -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- PTT 鄉民論壇黑底綠字推噓文實況 -->
+      <div class="ptt-terminal rounded-xl p-4 shadow-xl text-xs space-y-2">
+        <div class="flex items-center justify-between border-b border-zinc-800 pb-2 mb-2 text-zinc-400">
+          <span>看板: Baseball (棒球)</span>
+          <span id="ptt-title">[情報] 本季中職戰績結算與選秀開箱檢討</span>
+        </div>
+        <div id="ptt-comments-list" class="space-y-1.5 leading-relaxed">
+          <!-- 由 app.js 動態渲染幽默鄉民推噓文 -->
+        </div>
+      </div>
+
+      <!-- 次年度選秀順位反轉預覽與推進按鈕 -->
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-xl flex flex-col md:flex-row items-center justify-between gap-4">
+        <div class="space-y-1 text-center md:text-left">
+          <h4 class="text-sm font-bold text-white flex items-center space-x-2">
+            <span>🎲 戰績順位連動：下一賽季選秀順位已決定！</span>
+          </h4>
+          <p id="next-draft-order-summary" class="text-xs text-slate-400"></p>
+        </div>
+        <button id="btn-next-season" class="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-slate-950 font-black px-6 py-3 rounded-xl shadow-lg transition transform hover:scale-105 text-sm flex items-center space-x-2 whitespace-nowrap">
+          <span id="btn-next-season-text">進入第 2 年選秀大會</span>
+          <i data-lucide="arrow-right" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- 球探檔案詳情彈窗 (Scouting Dossier Modal) -->
+  <div id="modal-dossier" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+    <div class="bg-slate-900 border border-slate-700 w-full max-w-xl rounded-2xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh] animate-in fade-in zoom-in duration-200">
+      
+      <!-- 彈窗頂部標題 -->
+      <div class="bg-gradient-to-r from-slate-900 to-slate-800 p-5 border-b border-slate-800 flex items-start justify-between">
+        <div>
+          <div class="flex items-center space-x-2 mb-1">
+            <span id="modal-display-code" class="text-xs bg-amber-500/20 text-amber-400 border border-amber-500/40 px-2 py-0.5 rounded font-mono font-bold"></span>
+            <span id="modal-school-badge" class="text-xs bg-slate-800 text-slate-300 px-2 py-0.5 rounded"></span>
+            <span id="modal-pos-badge" class="text-xs bg-blue-500/20 text-blue-400 border border-blue-500/40 px-2 py-0.5 rounded font-bold"></span>
+          </div>
+          <h3 id="modal-title" class="text-lg font-black text-white"></h3>
+        </div>
+        <button id="btn-close-modal" class="text-slate-400 hover:text-white p-1 rounded-lg transition">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- 彈窗內文卷軸區 -->
+      <div class="p-5 space-y-4 overflow-y-auto text-sm">
+        
+        <!-- 基本體型與投打規格 -->
+        <div class="grid grid-cols-3 gap-2 bg-slate-950 p-3 rounded-xl border border-slate-800 text-center font-num">
+          <div>
+            <span class="text-xs text-slate-500 block">身高體重</span>
+            <span id="modal-size" class="text-slate-200 font-bold"></span>
+          </div>
+          <div>
+            <span class="text-xs text-slate-500 block">投打習慣</span>
+            <span id="modal-bats" class="text-slate-200 font-bold"></span>
+          </div>
+          <div>
+            <span class="text-xs text-slate-500 block">守備位置</span>
+            <span id="modal-pos" class="text-slate-200 font-bold"></span>
+          </div>
+        </div>
+
+        <!-- 高中盃賽成績 -->
+        <div class="space-y-1.5">
+          <h4 class="text-xs font-bold text-amber-400 flex items-center space-x-1">
+            <i data-lucide="activity" class="w-3.5 h-3.5"></i>
+            <span>高中盃賽實戰數據 (黑豹旗 / 木棒聯賽)</span>
+          </h4>
+          <p id="modal-stats" class="bg-slate-800/60 p-3 rounded-xl text-slate-200 text-xs leading-relaxed border border-slate-800"></p>
+        </div>
+
+        <!-- 球探優勢筆記 -->
+        <div class="space-y-1.5">
+          <h4 class="text-xs font-bold text-emerald-400 flex items-center space-x-1">
+            <i data-lucide="thumbs-up" class="w-3.5 h-3.5"></i>
+            <span>球探報告：優勢天賦分析</span>
+          </h4>
+          <p id="modal-pros" class="bg-emerald-950/20 p-3 rounded-xl text-emerald-200 text-xs leading-relaxed border border-emerald-900/40"></p>
+        </div>
+
+        <!-- 球探隱憂與風險盲點 -->
+        <div class="space-y-1.5">
+          <h4 class="text-xs font-bold text-rose-400 flex items-center space-x-1">
+            <i data-lucide="alert-triangle" class="w-3.5 h-3.5"></i>
+            <span>球探報告：隱憂與風險質疑（無劇透）</span>
+          </h4>
+          <p id="modal-cons" class="bg-rose-950/20 p-3 rounded-xl text-rose-200 text-xs leading-relaxed border border-rose-900/40"></p>
+        </div>
+
+      </div>
+
+      <!-- 彈窗底部操作列 -->
+      <div class="p-4 bg-slate-950 border-t border-slate-800 flex items-center justify-between">
+        <span class="text-xs text-slate-500">指名後將於賽季末開箱真實身分</span>
+        <button id="btn-modal-draft" class="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-slate-950 font-black px-5 py-2.5 rounded-xl shadow-lg transition text-xs flex items-center space-x-1.5">
+          <i data-lucide="check-circle" class="w-4 h-4"></i>
+          <span>指名此位新秀</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 首席球探五年任期・歷史成績總考評彈窗 (Hall of Fame Finale Modal) -->
+  <div id="modal-finale" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
+    <div class="bg-slate-900 border border-slate-700 w-full max-w-2xl rounded-3xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh] animate-in fade-in zoom-in duration-300">
+      
+      <!-- 彈窗頂部榮耀標題 -->
+      <div class="bg-gradient-to-r from-amber-600 via-orange-600 to-amber-700 p-6 text-center text-slate-950 relative overflow-hidden">
+        <span class="text-xs font-black uppercase tracking-widest bg-black/20 px-3 py-1 rounded-full text-white inline-block mb-1">
+          五 年 任 期 屆 滿 ・ 歷 史 總 考 評
+        </span>
+        <h2 class="text-2xl md:text-3xl font-black text-white flex items-center justify-center space-x-2">
+          <span>🏆</span>
+          <span id="finale-team-title">首席球探考評報告</span>
+        </h2>
+        <p class="text-xs text-amber-100 font-medium mt-1" id="finale-subtitle"></p>
+      </div>
+
+      <!-- 彈窗滾動內容 -->
+      <div class="p-6 space-y-6 overflow-y-auto text-sm">
+        
+        <!-- 考評等級與核心數據卡 -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
+          <div class="bg-slate-950 p-3.5 rounded-2xl border border-slate-800">
+            <span class="text-xs text-slate-500 block mb-1">球探評鑑等級</span>
+            <span id="finale-grade" class="text-2xl font-black text-amber-400 font-num"></span>
+            <span id="finale-grade-title" class="text-[11px] text-slate-400 block font-bold"></span>
+          </div>
+          <div class="bg-slate-950 p-3.5 rounded-2xl border border-slate-800">
+            <span class="text-xs text-slate-500 block mb-1">五年累積總勝場</span>
+            <span id="finale-wins" class="text-2xl font-black text-white font-num"></span>
+            <span class="text-[11px] text-slate-400 block">/ 600 場例行賽</span>
+          </div>
+          <div class="bg-slate-950 p-3.5 rounded-2xl border border-slate-800">
+            <span class="text-xs text-slate-500 block mb-1">年度總冠軍金盃</span>
+            <span id="finale-championships" class="text-2xl font-black text-amber-400 font-num"></span>
+            <span class="text-[11px] text-slate-400 block">座總冠軍</span>
+          </div>
+          <div class="bg-slate-950 p-3.5 rounded-2xl border border-slate-800">
+            <span class="text-xs text-slate-500 block mb-1">五年選秀成果</span>
+            <span id="finale-roster-summary" class="text-xs font-bold text-white block mt-1.5 font-num"></span>
+          </div>
+        </div>
+
+        <!-- 💔 五年最痛心錯過榜 (Top Missed Gems) -->
+        <div class="space-y-2">
+          <h4 class="text-xs font-bold text-rose-400 flex items-center space-x-1.5">
+            <span>💔</span>
+            <span>五年最痛心錯過榜（被對手截胡、大殺四方的傳奇神獸）</span>
+          </h4>
+          <div id="finale-missed-list" class="space-y-2">
+            <!-- 由 app.js 動態渲染 -->
+          </div>
+        </div>
+
+        <!-- 🛡️ 五年最英明避雷榜 (Top Dodged Traps) -->
+        <div class="space-y-2">
+          <h4 class="text-xs font-bold text-emerald-400 flex items-center space-x-1.5">
+            <span>🛡️</span>
+            <span>五年最英明避雷榜（成功看穿破綻、笑看死敵踩中地雷）</span>
+          </h4>
+          <div id="finale-dodged-list" class="space-y-2">
+            <!-- 由 app.js 動態渲染 -->
+          </div>
+        </div>
+
+      </div>
+
+      <!-- 彈窗底部操作列 -->
+      <div class="p-4 bg-slate-950 border-t border-slate-800 flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center space-x-2">
+          <button id="btn-export-finale-card" class="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-slate-950 font-black px-4 py-2.5 rounded-xl shadow-lg transition text-xs flex items-center space-x-1.5">
+            <i data-lucide="camera" class="w-4 h-4"></i>
+            <span>📸 下載生涯榮譽戰報圖</span>
+          </button>
+          <button id="btn-copy-finale-card" class="bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold px-3.5 py-2.5 rounded-xl transition text-xs flex items-center space-x-1.5 border border-slate-700">
+            <i data-lucide="copy" class="w-4 h-4"></i>
+            <span>📋 複製圖片</span>
+          </button>
+        </div>
+        <button id="btn-finale-restart" class="text-slate-400 hover:text-white font-bold px-3 py-2 text-xs flex items-center space-x-1 transition">
+          <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+          <span>開啟全新五年任期</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 離屏渲染專用：高解析度五年榮譽考評認證戰報卡 (720px 寬，專為社群分享設計) -->
+  <div id="finale-share-card" style="position: fixed; left: -9999px; top: 0; width: 720px;" class="bg-slate-950 text-slate-100 p-8 rounded-3xl border-2 border-amber-500/50 shadow-2xl space-y-6 font-sans">
+    
+    <!-- 頂部榮耀徽章與標題 -->
+    <div class="flex items-center justify-between border-b border-slate-800 pb-5">
+      <div class="flex items-center space-x-3">
+        <span id="sc-team-icon" class="text-4xl">🦅</span>
+        <div>
+          <span class="text-[11px] font-bold text-amber-400 uppercase tracking-widest block font-num">
+            CPBL SCOUT & GM SIMULATOR・OFFICIAL DOSSIER
+          </span>
+          <h2 id="sc-team-name" class="text-2xl font-black text-white tracking-wide">南方雄鷹・首席球探任期考評</h2>
+        </div>
+      </div>
+      <div class="text-right">
+        <span class="text-[10px] bg-amber-500/10 text-amber-400 border border-amber-500/30 px-3 py-1 rounded-full font-bold">
+          五年任期榮譽結算
+        </span>
+        <span id="sc-date-stamp" class="block text-[10px] text-slate-500 mt-1 font-mono"></span>
+      </div>
+    </div>
+
+    <!-- 考評等級大標題區 -->
+    <div class="bg-gradient-to-r from-amber-950/40 via-slate-900 to-amber-950/40 border border-amber-500/30 rounded-2xl p-5 flex items-center justify-between">
+      <div>
+        <span class="text-xs text-slate-400 font-medium block mb-1">球探總管評鑑等級</span>
+        <div class="flex items-baseline space-x-3">
+          <span id="sc-grade" class="text-5xl font-black text-amber-400 font-num">S+</span>
+          <span id="sc-grade-title" class="text-lg font-black text-white">殿堂級神總管</span>
+        </div>
+        <p id="sc-subtitle" class="text-xs text-amber-200/80 mt-1.5 font-medium"></p>
+      </div>
+      <div class="text-center bg-slate-950/80 border border-amber-500/20 px-5 py-3 rounded-2xl">
+        <span class="text-3xl block">🏆</span>
+        <span id="sc-championships-badge" class="text-xs font-black text-amber-400 font-num block mt-1">3座總冠軍</span>
+      </div>
+    </div>
+
+    <!-- 四大核心戰力指標 -->
+    <div class="grid grid-cols-4 gap-3 text-center">
+      <div class="bg-slate-900/90 p-3.5 rounded-xl border border-slate-800">
+        <span class="text-[11px] text-slate-400 block mb-0.5">五年總戰績</span>
+        <span id="sc-wins-rate" class="text-lg font-black text-white font-num"></span>
+        <span id="sc-wins-count" class="text-[10px] text-slate-500 block"></span>
+      </div>
+      <div class="bg-slate-900/90 p-3.5 rounded-xl border border-slate-800">
+        <span class="text-[11px] text-slate-400 block mb-0.5">總冠軍金盃</span>
+        <span id="sc-champ-count" class="text-lg font-black text-amber-400 font-num"></span>
+        <span class="text-[10px] text-slate-500 block">座台灣大賽冠軍</span>
+      </div>
+      <div class="bg-slate-900/90 p-3.5 rounded-xl border border-slate-800">
+        <span class="text-[11px] text-slate-400 block mb-0.5">新秀實質貢獻</span>
+        <span id="sc-rookie-war" class="text-lg font-black text-emerald-400 font-num"></span>
+        <span class="text-[10px] text-slate-500 block">生涯總 WAR 貢獻</span>
+      </div>
+      <div class="bg-slate-900/90 p-3.5 rounded-xl border border-slate-800">
+        <span class="text-[11px] text-slate-400 block mb-0.5">五年選秀評價</span>
+        <span id="sc-draft-summary" class="text-lg font-black text-amber-300 font-num"></span>
+        <span class="text-[10px] text-slate-500 block">選秀成果品質</span>
+      </div>
+    </div>
+
+    <!-- 代表作：名震天下神獸 與 英明避雷 -->
+    <div class="grid grid-cols-2 gap-4 text-xs">
+      <div class="bg-slate-900/80 p-4 rounded-xl border border-slate-800 space-y-2">
+        <span class="font-bold text-amber-400 flex items-center space-x-1.5">
+          <span>🌟</span>
+          <span>五年核心台柱新秀</span>
+        </span>
+        <div id="sc-core-players" class="space-y-1.5 text-slate-300">
+          <!-- 動態填入 -->
+        </div>
+      </div>
+      <div class="bg-slate-900/80 p-4 rounded-xl border border-slate-800 space-y-2">
+        <span class="font-bold text-emerald-400 flex items-center space-x-1.5">
+          <span>🛡️</span>
+          <span>五年最具代表性避雷</span>
+        </span>
+        <div id="sc-dodged-traps" class="space-y-1.5 text-slate-300">
+          <!-- 動態填入 -->
+        </div>
+      </div>
+    </div>
+
+    <!-- 底部認證印記與網址防偽 -->
+    <div class="pt-4 border-t border-slate-800 flex items-center justify-between text-[11px] text-slate-500">
+      <div class="flex items-center space-x-2">
+        <span class="text-amber-500 font-bold">🎖️ CPBL SCOUTING BUREAU OFFICIAL RECORD</span>
+        <span>•</span>
+        <span>官方認證歷史成績單</span>
+      </div>
+      <div class="font-mono text-slate-400">
+        台灣職棒・球探模擬器
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 引入所有模組腳本 (加上版本號以破除瀏覽器 Disk Cache 快取) -->
+  <script src="js/data/superstars.js?v=2.5"></script>
+  <script src="js/data/regulars.js?v=2.5"></script>
+  <script src="js/data/busts.js?v=2.5"></script>
+  <script src="js/data/ordinary.js?v=2.5"></script>
+  <script src="js/database.js?v=2.5"></script>
+  <script src="js/generator.js?v=2.5"></script>
+  <script src="js/ai.js?v=2.5"></script>
+  <script src="js/sim.js?v=2.5"></script>
+  <script src="js/app.js?v=2.5"></script>
+
+  <script>
+    // 初始化 Lucide 圖示
+    lucide.createIcons();
+  </script>
+</body>
+</html>
