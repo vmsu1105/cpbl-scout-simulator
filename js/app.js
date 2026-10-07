@@ -804,9 +804,10 @@ window.App = {
     }
 
     filtered.forEach(p => {
-      const card = document.createElement("div");
+      const flipContainer = document.createElement("div");
+      flipContainer.className = "card-flip-container cursor-pointer select-none group h-[290px]";
       
-      let borderClass = "border-slate-800 bg-slate-950/60";
+      let borderClass = "border-slate-800 bg-slate-950/80";
       let badgeHtml = "";
       let reactionHtml = "";
       let warTotal = (p.y1_war || 0) + (p.y2_war || 0) + (p.y3_war || 0) + (p.y4_war || 0) + (p.y5_war || 0);
@@ -816,7 +817,7 @@ window.App = {
         if (p.tier === "legend") {
           borderClass = "border-amber-400/80 bg-gradient-to-b from-purple-950/40 via-amber-950/30 to-slate-950 shadow-[0_0_15px_rgba(245,158,11,0.25)] ring-1 ring-amber-400/40";
           badgeHtml = `<span class="bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 text-slate-950 font-black text-[10px] px-1.5 py-0.5 rounded">👑 SS 級超神獸</span>`;
-          reactionHtml = `<span class="text-amber-300 font-black">💔 痛失殿堂超神獸！已被【${team.name}】第 ${p.draftRound} 輪搶走！</span>`;
+          reactionHtml = `<span class="text-amber-300 font-black">💔 痛失超神獸！已被【${team.name}】第 ${p.draftRound} 輪搶走！</span>`;
         } else if (p.tier === "superstar") {
           borderClass = "border-amber-500/60 bg-gradient-to-b from-amber-950/30 to-slate-950";
           badgeHtml = `<span class="bg-amber-500 text-slate-950 font-black text-[10px] px-1.5 py-0.5 rounded">🌟 Ｓ 級神獸</span>`;
@@ -824,7 +825,7 @@ window.App = {
         } else if (p.tier === "regular") {
           borderClass = "border-emerald-500/40 bg-gradient-to-b from-emerald-950/20 to-slate-950";
           badgeHtml = `<span class="bg-emerald-500 text-slate-950 font-bold text-[10px] px-1.5 py-0.5 rounded">⚾ Ａ級中堅</span>`;
-          reactionHtml = `<span class="text-emerald-400 font-medium">已被【${team.name}】指名（即戰力先發）</span>`;
+          reactionHtml = `<span class="text-emerald-400 font-medium">已被【${team.name}】指名（即戰力主力）</span>`;
         } else if (p.tier === "bust") {
           borderClass = "border-rose-500/50 bg-gradient-to-b from-rose-950/20 to-slate-950";
           badgeHtml = `<span class="bg-rose-600 text-white font-bold text-[10px] px-1.5 py-0.5 rounded">💣 致命地雷</span>`;
@@ -832,52 +833,101 @@ window.App = {
         } else {
           borderClass = "border-slate-800 bg-slate-950";
           badgeHtml = `<span class="bg-slate-700 text-slate-300 text-[10px] px-1.5 py-0.5 rounded">🌾 普通人</span>`;
-          reactionHtml = `<span class="text-slate-300">已被【${team.name}】指名（板凳深度 +5 WAR）</span>`;
+          reactionHtml = `<span class="text-slate-300">已被【${team.name}】指名（穩定牛棚/板凳）</span>`;
         }
       } else {
         // 落選
-        borderClass = "border-slate-800/80 bg-slate-950/40 opacity-80 hover:opacity-100 transition";
+        borderClass = "border-slate-800/80 bg-slate-950/40 opacity-90 hover:opacity-100 transition";
         badgeHtml = `<span class="bg-slate-800 text-slate-400 text-[10px] px-1.5 py-0.5 rounded">落選秀</span>`;
         if (p.tier === "legend") {
           reactionHtml = `<span class="text-amber-300 font-black">😱 歷史級大遺珠！全聯盟竟然放過 SS 級殿堂神獸！</span>`;
         } else if (p.tier === "superstar") {
           reactionHtml = `<span class="text-rose-400 font-bold">😱 世紀大遺珠！全聯盟都看走眼的 Ｓ 級神獸！</span>`;
         } else if (p.tier === "regular") {
-          reactionHtml = `<span class="text-emerald-400 font-medium">優質即戰力落選・令人惋惜的先發人才</span>`;
+          reactionHtml = `<span class="text-emerald-400 font-medium">優質即戰力落選・令人惋惜的人才</span>`;
         } else {
           reactionHtml = `<span class="text-slate-400">未獲指名・投身民間職場</span>`;
         }
       }
 
-      card.className = `rounded-xl p-3.5 border ${borderClass} shadow-md flex flex-col justify-between space-y-2.5 text-xs`;
+      flipContainer.innerHTML = `
+        <div class="card-flip-inner relative w-full h-full rounded-xl transition duration-500">
+          
+          <!-- 正面：命運開箱面 (預設顯示) -->
+          <div class="card-front absolute inset-0 rounded-xl p-3.5 border ${borderClass} shadow-md flex flex-col justify-between text-xs overflow-hidden">
+            <div class="space-y-1.5">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-1.5">
+                  <span class="font-mono text-[11px] text-slate-500">${p.displayCode}</span>
+                  ${badgeHtml}
+                </div>
+                <span class="text-[10px] text-amber-400 bg-amber-500/10 px-1.5 py-0.5 rounded font-bold flex items-center space-x-1 group-hover:bg-amber-500 group-hover:text-slate-950 transition">
+                  <i data-lucide="rotate-cw" class="w-2.5 h-2.5"></i>
+                  <span>翻看選前</span>
+                </span>
+              </div>
 
-      card.innerHTML = `
-        <div class="space-y-1.5">
-          <div class="flex items-center justify-between">
-            <span class="font-mono text-[11px] text-slate-500">${p.displayCode}</span>
-            ${badgeHtml}
-          </div>
+              <div>
+                <h4 class="font-bold text-white text-sm line-clamp-1">${p.title}</h4>
+                <div class="text-[11px] text-amber-400 font-bold font-num mt-0.5 flex items-center justify-between">
+                  <span>真實身分：${p.real_nickname || p.real_name_hint}</span>
+                  <span class="text-[10px] text-slate-400 font-normal">${p.pos}・${p.bats}</span>
+                </div>
+              </div>
 
-          <div>
-            <h4 class="font-bold text-white text-sm line-clamp-1">${p.title}</h4>
-            <div class="text-[11px] text-amber-400/90 font-bold font-num mt-0.5">
-              真實身分：${p.real_nickname || p.real_name_hint}
+              <div class="text-[11px] bg-black/40 p-2 rounded-lg border border-white/5 space-y-1">
+                <div class="text-slate-300 font-medium">${reactionHtml}</div>
+                <p class="text-slate-400 line-clamp-2 text-[10px] leading-relaxed">${p.career_story}</p>
+              </div>
+            </div>
+
+            <div class="pt-2 border-t border-white/5 flex items-center justify-between text-[10px] text-slate-500 font-num">
+              <span class="text-slate-300 font-bold">五年戰力: ${warTotal > 0 ? `<b class="text-amber-400">+${warTotal} WAR</b>` : `<b class="text-rose-400">0 WAR</b>`}</span>
+              <span class="text-slate-400">${p.isDrafted ? `第 ${p.draftRound} 輪・${p.draftedBy.shortName}` : '落選'}</span>
             </div>
           </div>
 
-          <div class="text-[11px] bg-black/40 p-2 rounded-lg border border-white/5 space-y-1">
-            <div class="text-slate-300 font-medium">${reactionHtml}</div>
-            <p class="text-slate-400 line-clamp-2 text-[10px] leading-relaxed">${p.career_story}</p>
-          </div>
-        </div>
+          <!-- 背面：選前球探秘密報告 (點擊翻過來查看選前評價) -->
+          <div class="card-back absolute inset-0 rounded-xl p-3.5 bg-slate-900 border border-slate-700 shadow-xl flex flex-col justify-between text-xs overflow-hidden">
+            <div class="space-y-1.5">
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] bg-slate-800 text-slate-300 px-1.5 py-0.5 rounded font-bold truncate max-w-[150px]">
+                  🏫 ${p.school}
+                </span>
+                <span class="text-[10px] text-amber-400 bg-slate-800 px-1.5 py-0.5 rounded font-bold flex items-center space-x-1 group-hover:bg-amber-500 group-hover:text-slate-950 transition">
+                  <i data-lucide="rotate-ccw" class="w-2.5 h-2.5"></i>
+                  <span>翻回開箱</span>
+                </span>
+              </div>
 
-        <div class="pt-2 border-t border-white/5 flex items-center justify-between text-[10px] text-slate-500 font-num">
-          <span>五年戰力: ${warTotal > 0 ? `+${warTotal} WAR` : `0 WAR`}</span>
-          <span>${p.isDrafted ? `第 ${p.draftRound} 輪・${p.draftedBy.shortName}` : '落選'}</span>
+              <div>
+                <span class="text-[10px] text-amber-400/90 font-bold block">【選前球探檔案】</span>
+                <h4 class="font-bold text-white text-xs line-clamp-1">${p.title}</h4>
+                <span class="text-[10px] text-slate-400 font-num">${p.pos}・${p.bats}・${p.height}cm/${p.weight}kg</span>
+              </div>
+
+              <div class="text-[10px] bg-slate-950 p-2 rounded-lg border border-slate-800 space-y-1">
+                <p class="text-slate-300 line-clamp-1 leading-snug"><b class="text-amber-400/90">數據：</b>${p.stats}</p>
+                <p class="text-emerald-300/90 line-clamp-2 leading-snug"><b class="text-emerald-400">優點：</b>${p.scout_pros}</p>
+                <p class="text-rose-300/90 line-clamp-1 leading-snug"><b class="text-rose-400">隱憂：</b>${p.scout_cons}</p>
+              </div>
+            </div>
+
+            <div class="pt-1.5 border-t border-slate-800 text-center text-[10px] text-amber-400/80 font-bold">
+              🔄 點擊卡片翻回真實命運開箱
+            </div>
+          </div>
+
         </div>
       `;
 
-      grid.appendChild(card);
+      // 點擊翻牌切換正反面
+      flipContainer.addEventListener("click", () => {
+        const inner = flipContainer.querySelector(".card-flip-inner");
+        inner.classList.toggle("is-flipped");
+      });
+
+      grid.appendChild(flipContainer);
     });
   },
 

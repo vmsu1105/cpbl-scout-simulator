@@ -65,6 +65,18 @@
       <div id="team-cards-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <!-- 由 app.js 動態渲染六隊卡片 -->
       </div>
+
+      <!-- 首頁致敬與免責聲明小標章 -->
+      <div class="mt-8 bg-slate-900/40 p-3.5 rounded-2xl border border-slate-800 text-center space-y-1.5 max-w-xl mx-auto">
+        <div class="flex items-center justify-center space-x-1.5 text-xs text-amber-400 font-bold">
+          <span>⚾</span>
+          <span>致敬經典神作《棒球人生模擬器 (YaKyoLife)》</span>
+          <span>❤️</span>
+        </div>
+        <p class="text-[11px] text-slate-400 leading-relaxed">
+          遊戲內所有球員稱號、原型、評語與數值皆為娛樂演算設計，<strong>純屬虛構，如有雷同純屬巧合</strong>。
+        </p>
+      </div>
     </section>
 
     <!-- 視圖 2：選秀大會現場 (Live Draft Screen) -->
@@ -167,7 +179,10 @@
               <span>當屆選秀全景大揭密：你錯過了誰？</span>
               <span class="text-xs font-normal text-slate-400">（對手開箱＆落選遺珠全公開）</span>
             </h3>
-            <p class="text-xs text-slate-400 mt-0.5">看看電腦球團偷走了哪隻神獸，或是替你踩了哪顆驚天大雷！</p>
+            <p class="text-xs text-slate-300 mt-0.5 flex items-center space-x-1.5 flex-wrap">
+              <span class="text-amber-400 font-bold">💡 點擊卡片即可 3D 翻轉：</span>
+              <span>隨時比對「選前球探評語」與「開箱真實命運」！</span>
+            </p>
           </div>
 
           <!-- 分類標籤篩選鈕 -->
@@ -249,6 +264,35 @@
     </section>
 
   </main>
+
+  <!-- 全域頁尾：致敬《棒球人生模擬器》與官方免責聲明 -->
+  <footer class="bg-slate-950 border-t border-slate-900 py-8 px-4 text-xs text-slate-400 mt-12">
+    <div class="max-w-4xl mx-auto space-y-4 text-center">
+      
+      <!-- 致敬區塊 -->
+      <div class="bg-slate-900/70 p-4 rounded-2xl border border-amber-500/20 space-y-2 text-slate-300 leading-relaxed shadow-lg">
+        <div class="flex items-center justify-center space-x-1.5 text-amber-400 font-bold text-xs sm:text-sm">
+          <span>⚾</span>
+          <span>特別致敬：經典獨立棒球神作《棒球人生模擬器 (YaKyoLife)》</span>
+          <span>❤️</span>
+        </div>
+        <p class="text-[11px] text-slate-400 max-w-2xl mx-auto">
+          本作核心靈感深獲台灣獨立棒球名作<strong>《棒球人生模擬器》</strong>之啟發與薰陶。謹向所有長年深耕台灣棒球文化之獨立創作者、數據分析者與熱血球迷致敬！
+        </p>
+      </div>
+
+      <!-- 免責聲明 -->
+      <div class="space-y-1 text-[11px] text-slate-500 max-w-2xl mx-auto">
+        <p class="font-medium text-slate-400">
+          ⚠️ <strong>官方聲明</strong>：本遊戲所有球員稱號、原型、體質數值、球探評語與賽季發展皆為<strong>遊戲化演算法與策略娛樂設計，純屬虛構，如有雷同純屬巧合</strong>。
+        </p>
+        <p class="text-[10px] text-slate-600 font-mono">
+          CPBL Scout & GM Simulator • 台灣職棒・球探模擬器 • 純前端開源單機作品
+        </p>
+      </div>
+
+    </div>
+  </footer>
 
   <!-- 球探檔案詳情彈窗 (Scouting Dossier Modal) -->
   <div id="modal-dossier" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
@@ -549,15 +593,15 @@
   </div>
 
   <!-- 引入所有模組腳本 (加上版本號以破除瀏覽器 Disk Cache 快取) -->
-  <script src="js/data/superstars.js?v=3.1"></script>
-  <script src="js/data/regulars.js?v=3.1"></script>
-  <script src="js/data/busts.js?v=3.1"></script>
-  <script src="js/data/ordinary.js?v=3.1"></script>
-  <script src="js/database.js?v=3.1"></script>
-  <script src="js/generator.js?v=3.1"></script>
-  <script src="js/ai.js?v=3.1"></script>
-  <script src="js/sim.js?v=3.1"></script>
-  <script src="js/app.js?v=3.1"></script>
+  <script src="js/data/superstars.js?v=3.2"></script>
+  <script src="js/data/regulars.js?v=3.2"></script>
+  <script src="js/data/busts.js?v=3.2"></script>
+  <script src="js/data/ordinary.js?v=3.2"></script>
+  <script src="js/database.js?v=3.2"></script>
+  <script src="js/generator.js?v=3.2"></script>
+  <script src="js/ai.js?v=3.2"></script>
+  <script src="js/sim.js?v=3.2"></script>
+  <script src="js/app.js?v=3.2"></script>
 
   <script>
     // 初始化 Lucide 圖示
